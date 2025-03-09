@@ -15,28 +15,32 @@ def add_time(start, duration, start_day= None):
         'minutos': int(datos_duracion[1])
     }
 
-    # Sumar minutos
-    t_inicial['minutos'] += t_duracion['minutos']
-    if t_inicial['minutos'] > 59:
-        t_inicial['minutos'] -= 60
-        t_inicial['hora'] += 1
-        if t_inicial['minutos'] < 10:
-            t_inicial['minutos'] = f"0{t_inicial['minutos']}"
-        if t_inicial['hora'] > 11 and t_inicial['am-pm'] == "PM":
-            t_inicial["dias"] += 1
-            t_inicial['am-pm'] = "AM"
-            
-    t_inicial['hora'] += t_duracion['hora']
-    
-    while t_inicial['hora'] > 12:
-        if t_inicial['hora'] > 11:
+    for _ in range(t_duracion['minutos']):
+        t_inicial['minutos'] += 1
+        if t_inicial['minutos'] == 60:
+            t_inicial['hora'] += 1
+            t_inicial['minutos'] = 0
+        if t_inicial['hora'] == 12 and t_inicial['minutos'] == 0:
             if t_inicial['am-pm'] == "PM":
                 t_inicial['am-pm'] = "AM"
                 t_inicial["dias"] += 1
             else:
                 t_inicial['am-pm'] = "PM"
+    
+    if t_inicial['minutos'] < 10:
+        t_inicial['minutos'] = f"0{t_inicial['minutos']}"
+        
+    for _ in range(t_duracion['hora']):
+        t_inicial['hora'] += 1
         if t_inicial['hora'] > 12:
             t_inicial['hora'] -= 12
+        if t_inicial['hora'] >= 12:
+            if t_inicial['am-pm'] == "PM":
+                t_inicial['am-pm'] = "AM"
+                t_inicial["dias"] += 1
+            else:
+                t_inicial['am-pm'] = "PM"
+        
     
     new_time = f"{t_inicial['hora']}:{t_inicial['minutos']} {t_inicial['am-pm']}"
     
@@ -63,7 +67,6 @@ def add_time(start, duration, start_day= None):
           
 
     return new_time
-    
 
 
 # tests
@@ -76,5 +79,3 @@ print(add_time('3:30 PM', '2:12', 'Monday'))
 print(add_time('2:59 AM', '24:00', 'saturDay'))
 print(add_time('11:59 PM', '24:05', 'Wednesday'))
 print(add_time('8:16 PM', '466:02', 'tuesday'))
-
-# print(add_time('3:00 PM', '3:10', 'mondAy'))
