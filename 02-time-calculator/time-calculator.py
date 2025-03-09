@@ -20,6 +20,11 @@ def add_time(start, duration, start_day= None):
     if t_inicial['minutos'] > 59:
         t_inicial['minutos'] -= 60
         t_inicial['hora'] += 1
+        if t_inicial['minutos'] < 10:
+            t_inicial['minutos'] = f"0{t_inicial['minutos']}"
+        if t_inicial['hora'] > 11 and t_inicial['am-pm'] == "PM":
+            t_inicial["dias"] += 1
+            
     t_inicial['hora'] += t_duracion['hora']
     
     while t_inicial['hora'] > 12:
@@ -67,8 +72,14 @@ def add_time(start, duration, start_day= None):
 #         'hora': int(inicio[0])
 #     }
 
+# tests
 
-print(add_time('11:20 PM', '3:58', 'mondAy'))
-print(add_time('3:00 PM', '3:10'))
-print(add_time('3:00 PM', '3:10', 'mondAy'))
-# Returns: 6:10 PM
+print(add_time('3:30 PM', '2:12'))
+print(add_time('11:55 AM', '3:12'))
+print(add_time('2:59 AM', '24:00') )
+print(add_time('11:59 PM', '24:05'))
+print(add_time('8:16 PM', '466:02'))
+print(add_time('3:30 PM', '2:12', 'Monday'))
+(add_time('2:59 AM', '24:00', 'saturDay'))
+
+# print(add_time('3:00 PM', '3:10', 'mondAy'))
