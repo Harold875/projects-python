@@ -1,4 +1,4 @@
-def add_time(start, duration):
+def add_time(start, duration, start_day= None):
     
     datos_inicio = start.replace(' ', ':').split(':')
     datos_duracion = duration.split(':')
@@ -7,6 +7,7 @@ def add_time(start, duration):
         'hora': int(datos_inicio[0]),
         'minutos': int(datos_inicio[1]),
         'am-pm': datos_inicio[2],
+        'dias': 0
     }
     
     t_duracion = {
@@ -19,16 +20,41 @@ def add_time(start, duration):
     if t_inicial['minutos'] > 59:
         t_inicial['minutos'] -= 60
         t_inicial['hora'] += 1
-        if t_inicial['hora'] > 12:
-            t_inicial['hora'] = 1
-        if t_inicial['hora'] > 11:
-            if t_inicial['am-pm'] == "AM":
-                t_inicial['am-pm'] = "PM"
-            else:
-                t_inicial['am-pm'] = "AM"
+    t_inicial['hora'] += t_duracion['hora']
     
+    while t_inicial['hora'] > 12:
+        if t_inicial['hora'] > 11:
+            if t_inicial['am-pm'] == "PM":
+                t_inicial['am-pm'] = "AM"
+                t_inicial["dias"] += 1
+            else:
+                t_inicial['am-pm'] = "PM"
+        if t_inicial['hora'] > 12:
+            t_inicial['hora'] -= 12
     
     new_time = f"{t_inicial['hora']}:{t_inicial['minutos']} {t_inicial['am-pm']}"
+    
+    # dias de la semana:
+    if start_day != None:
+        start_day = start_day.capitalize()
+        days_week = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+
+        if t_inicial['dias'] > 0:
+            n = days_week.index(start_day) + t_inicial['dias']
+            while n > 6:
+                n -= 7
+            day_week_result = days_week[n]
+        else:
+            day_week_result = start_day
+        
+        new_time += f", {day_week_result}"
+    
+    # dias  
+    if t_inicial['dias'] == 1:
+        new_time += " (next day)"
+    elif t_inicial['dias'] > 1:
+        new_time += f" ({t_inicial['dias']} days later)"
+          
 
     return new_time
     
@@ -42,6 +68,7 @@ def add_time(start, duration):
 #     }
 
 
-print(add_time('12:20 PM', '3:58'))
+print(add_time('11:20 PM', '3:58', 'mondAy'))
 print(add_time('3:00 PM', '3:10'))
+print(add_time('3:00 PM', '3:10', 'mondAy'))
 # Returns: 6:10 PM
