@@ -7,10 +7,10 @@ class Category:
     
     def __str__(self):
         message = ''
-        distance = (30 - len(self.name)) // 2
+        distance = (30 - len(self.name[0:30])) // 2
         message += ('*'*distance) + f'{self.name}' + ('*'*distance) + '\n'
         for registro in self.ledger:
-            num_str = str("%.2f" % registro['amount'])
+            num_str = f'{registro['amount']:.2f}'
             description = registro['description'][0:23]
             message += description + ((23 - len(description))+(7-len(num_str)))*' ' + num_str + '\n'
         message += f'Total: {self.get_balance()}'
@@ -44,8 +44,74 @@ class Category:
 
 
 def create_spend_chart(categories):
-    pass
+    data_categories = []
+    for category in categories:
+        total_retirado = sum([
+            abs(registro['amount']) for registro in category.ledger 
+            if registro['amount'] < 0
+        ])
+        data_categories.append((category.name, total_retirado))
+        
+    porcentaje_total = sum([i[1] for i in data_categories])
+    data_categories.sort(key=lambda el:el[1],reverse=True)
+    data_categories_final = []
+    for category in data_categories:
+        porcentaje_category = (100 * category[1]) / porcentaje_total
+        data_categories_final.append((category[0], porcentaje_category // 10))
+    
+    # print(data_categories_final)
+    message = "Percentage spent by category\n"
+    for i in range(100, -1, -10):
+        if i == 0:
+            message += f'  {i}|\n' + ' '*4
+        elif i == 100:
+            message += f'{i}|\n'
+        else:
+            message += f' {i}|\n'
 
+    text_list = message.split('\n')
+    print(text_list)
+    i = 0
+    for category in data_categories_final:
+        for x in range(int(category[1]) + 1):
+            text_list[11 - x] += ' o '
+        text_list[12] += '---'
+        for index, char in enumerate(category[0]):
+            try:
+                text_list[13 + index] += f' {char} '
+            except IndexError:
+                text_list.append((' ' * (4 + i)) + f' {char} ')
+            # text_list[13 + i] += ''
+        i += 3
+    text_list[12] += '-'
+    message_final = '\n'.join(text_list)
+    return message_final
+
+    
+
+# [food., clothing]
+
+# Percentage spent by category
+# 100|          
+#  90|          
+#  80|          
+#  70|          
+#  60| o        
+#  50| o       
+#  40| o        
+#  30| o        
+#  20| o  o     
+#  10| o  o  o  
+#   0| o  o  o  
+#     ----------
+#      F  C  A  
+#      o  l  u  
+#      o  o  t  
+#      d  t  o  
+#         h     
+#         i     
+#         n     
+#         g   
 
 # pruebas
 # food = Category("Food")
@@ -61,5 +127,23 @@ food.deposit(1000, 'deposit')
 food.withdraw(10.15, 'groceries')
 food.withdraw(15.89, 'restaurant and more food for dessert')
 clothing = Category('Clothing')
-food.transfer(50, clothing)
+food.transfer(200, clothing)
+clothing.withdraw(130, 'loquesea')
+auto = Category("Auto")
+food.transfer(50, auto)
+auto.withdraw(30,'loquesea2')
 print(food)
+print(create_spend_chart([food,clothing, auto]))
+
+
+# lista_text = ['titulo','100|\n','90|\n','80|\n','70|\n','60|\n']
+# lista_text[5] += ' o '
+# print(lista_text)
+
+# lista = ['Percentage spent by category', '100|']
+# try:
+#     lista[3] += 'Hola2'
+# except IndexError:
+#     lista.insert(3, 'hola')
+
+# print(lista)
