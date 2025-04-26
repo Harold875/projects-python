@@ -1,3 +1,5 @@
+from pathlib import Path
+
 class Category:
     
     def __init__(self, name):
@@ -71,18 +73,24 @@ def create_spend_chart(categories):
 
     text_list = message.split('\n')
     print(text_list)
-    i = 0
+    z = 0
+    string_amount = ''
     for category in data_categories_final:
+        for i in range(1, 12):
+            if i == (11 - category[1]): break
+            text_list[i] += '   '
         for x in range(int(category[1]) + 1):
-            text_list[11 - x] += ' o '
+            index = 11 - x
+            text_list[index] += ' o '
         text_list[12] += '---'
+        string_amount = category[0] if len(category[0]) > len(string_amount) else string_amount
         for index, char in enumerate(category[0]):
             try:
                 text_list[13 + index] += f' {char} '
             except IndexError:
-                text_list.append((' ' * (4 + i)) + f' {char} ')
+                text_list.append((' ' * (4 + z)) + f' {char} ')
             # text_list[13 + i] += ''
-        i += 3
+        z += 3
     text_list[12] += '-'
     message_final = '\n'.join(text_list)
     return message_final
@@ -97,7 +105,7 @@ def create_spend_chart(categories):
 #  80|          
 #  70|          
 #  60| o        
-#  50| o       
+#  50| o        
 #  40| o        
 #  30| o        
 #  20| o  o     
@@ -111,7 +119,7 @@ def create_spend_chart(categories):
 #         h     
 #         i     
 #         n     
-#         g   
+#         g     
 
 # pruebas
 # food = Category("Food")
@@ -133,7 +141,10 @@ auto = Category("Auto")
 food.transfer(50, auto)
 auto.withdraw(30,'loquesea2')
 print(food)
-print(create_spend_chart([food,clothing, auto]))
+grafico = create_spend_chart([food,clothing, auto])
+print(grafico)
+path = Path('03-budget-app/grafico.txt')
+path.write_text(grafico)
 
 
 # lista_text = ['titulo','100|\n','90|\n','80|\n','70|\n','60|\n']
