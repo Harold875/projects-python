@@ -57,9 +57,12 @@ def create_spend_chart(categories):
     porcentaje_total = sum([i[1] for i in data_categories])
     data_categories.sort(key=lambda el:el[1],reverse=True)
     data_categories_final = []
+    string_amount = ''
     for category in data_categories:
         porcentaje_category = (100 * category[1]) / porcentaje_total
+        string_amount = category[0] if len(category[0]) > len(string_amount) else string_amount
         data_categories_final.append((category[0], porcentaje_category // 10))
+    
     
     # print(data_categories_final)
     message = "Percentage spent by category\n"
@@ -73,25 +76,38 @@ def create_spend_chart(categories):
 
     text_list = message.split('\n')
     print(text_list)
-    z = 0
-    string_amount = ''
+    
+    string_amount = int(len(string_amount))
+    for _ in range(string_amount):
+        text_list.append(' ' * 4)
+    
+
     for category in data_categories_final:
         for i in range(1, 12):
             if i == (11 - category[1]): break
-            text_list[i] += '   '
+            text_list[i] += ' ' * 3 
         for x in range(int(category[1]) + 1):
             index = 11 - x
             text_list[index] += ' o '
         text_list[12] += '---'
-        string_amount = category[0] if len(category[0]) > len(string_amount) else string_amount
+        
+        
         for index, char in enumerate(category[0]):
-            try:
-                text_list[13 + index] += f' {char} '
-            except IndexError:
-                text_list.append((' ' * (4 + z)) + f' {char} ')
-            # text_list[13 + i] += ''
-        z += 3
-    text_list[12] += '-'
+            text_list[13 + index] += f' {char} '
+            
+        if len(category[0]) != string_amount:
+            diferencia = string_amount - len(category[0]) 
+            for i in range(1, diferencia + 1):
+                text_list[-i] += ' '* 3
+
+    print(len(text_list))
+    for i in range(1, len(text_list)):
+        if i == 12:
+            text_list[12] += '-'
+            continue
+        text_list[i] += ' '
+
+
     message_final = '\n'.join(text_list)
     return message_final
 
